@@ -1,0 +1,2010 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏸 ระบบจัดคิวแบดมินตัน</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Noto+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --green-dark: #0f6e56;
+    --green: #0da174;
+    --green-mid: #86efac;
+    --green-light: #e1f5ee;
+    --orange: #eab308;
+    --orange-dark: #854f0b;
+    --orange-light: #faeeda;
+    --red: #ef4444;
+    --red-light: #fef2f2;
+    --blue: #2563eb;
+    --blue-light: #eff6ff;
+    --pink: #db2777;
+    --pink-light: #fdf2f8;
+    
+    --bg-main: #f4fbf7;
+    --card-bg: #ffffff;
+    --text-primary: #1f2937;
+    --text-secondary: #4b5563;
+    --text-muted: #9ca3af;
+    --border-color: #e5e7eb;
+    
+    --radius-lg: 18px;
+    --radius-md: 12px;
+    --radius-sm: 8px;
+    
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+  }
+
+  body {
+    font-family: 'Noto Sans', 'Noto Sans Thai', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Background decorative shapes */
+  .bg-blur-blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: -2;
+    opacity: 0.35;
+    pointer-events: none;
+    animation: float-blob 25s infinite alternate ease-in-out;
+  }
+  .blob-1 {
+    top: -10%;
+    right: -5%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, #a7f3d0 0%, rgba(167, 243, 208, 0) 70%);
+  }
+  .blob-2 {
+    bottom: -10%;
+    left: -5%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, #ccfbf1 0%, rgba(204, 251, 241, 0) 70%);
+  }
+  .blob-3 {
+    top: 30%;
+    left: 20%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, #e0f2fe 0%, rgba(224, 242, 254, 0) 70%);
+    animation-delay: 4s;
+  }
+  @keyframes float-blob {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(40px, 30px) scale(1.08); }
+    100% { transform: translate(-20px, -15px) scale(0.96); }
+  }
+
+  .bg-decor {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 380px;
+    background: radial-gradient(circle at 80% -10%, #d5eedf 0%, rgba(244, 251, 247, 0) 65%);
+    z-index: -1;
+    pointer-events: none;
+  }
+  
+  .bg-shuttlecock {
+    position: absolute;
+    top: 15px;
+    left: 55%;
+    transform: translateX(-50%);
+    opacity: 0.04;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  .main {
+    flex: 1;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 36px 24px 130px; /* Space for bottom floating bar */
+  }
+
+  /* Floating Bottom Nav */
+  .bottom-nav {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--card-bg);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(15, 110, 86, 0.12);
+    display: flex;
+    padding: 6px 12px;
+    gap: 4px;
+    z-index: 100;
+    border: 1px solid rgba(167, 243, 208, 0.3);
+    width: max-content;
+  }
+
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 32px;
+    border-radius: 14px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-muted);
+    border: none;
+    background: none;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    position: relative;
+  }
+
+  .nav-item:hover {
+    color: var(--green-dark);
+  }
+
+  .nav-item.active {
+    color: var(--green);
+    font-weight: 600;
+  }
+
+  .nav-item.active::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 3px;
+    background: var(--green);
+    border-radius: 2px;
+  }
+
+  .nav-item i {
+    font-size: 22px;
+    margin-bottom: 2px;
+  }
+
+  /* Header styles */
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .page-title {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--green-dark);
+    letter-spacing: -0.5px;
+  }
+
+  /* Badge styling */
+  .header-badges {
+    display: flex;
+    gap: 8px;
+  }
+
+  .h-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .h-badge-green {
+    background: var(--green-light);
+    color: var(--green);
+  }
+
+  .h-badge-green::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+  }
+
+  .h-badge-orange {
+    background: var(--orange-light);
+    color: var(--orange-dark);
+  }
+
+  .h-badge-orange::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--orange);
+  }
+
+  /* Cards */
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(229, 231, 235, 0.6);
+    padding: 24px;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Forms */
+  .form-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--text-primary);
+    background: #fff;
+    transition: all 0.2s ease;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(13, 161, 116, 0.15);
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: var(--radius-md);
+    border: 1.5px solid var(--border-color);
+    background: #fff;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-family: inherit;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .btn:hover {
+    background: #f9fafb;
+    border-color: var(--text-muted);
+  }
+
+  .btn-primary {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+  }
+
+  .btn-primary:hover {
+    background: var(--green-dark);
+    border-color: var(--green-dark);
+  }
+
+  .btn-warn {
+    background: var(--orange);
+    border-color: var(--orange);
+    color: #fff;
+  }
+
+  .btn-warn:hover {
+    background: #d97706;
+    border-color: #d97706;
+  }
+
+  .btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+    border-radius: var(--radius-sm);
+  }
+
+  .btn-icon {
+    padding: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+  }
+
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Two Column Layout */
+  .two-col {
+    display: flex;
+    gap: 28px;
+    align-items: flex-start;
+  }
+
+  .two-col .left {
+    width: 310px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .two-col .right {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* Select Court Selection Panel */
+  .court-select-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+
+  .court-select-grid {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+
+  .court-select-btn {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-md);
+    border: 1.5px solid var(--border-color);
+    background: #fff;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: 700;
+    font-family: inherit;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .court-select-btn:hover {
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  .court-select-btn.active {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+  }
+
+  .court-select-btn .check-badge {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    background: #fff;
+    color: var(--green);
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+
+  /* Waiting List Card */
+  .waiting-card {
+    padding: 24px 20px 24px 20px;
+  }
+
+  .waiting-list-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+  }
+
+  .waiting-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 380px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  .waiting-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px;
+    border-radius: var(--radius-md);
+    transition: background 0.2s ease;
+  }
+
+  .waiting-item:hover {
+    background: #f9fafb;
+  }
+
+  .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .waiting-info {
+    flex: 1;
+  }
+
+  .waiting-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-primary);
+  }
+
+  .waiting-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 1px;
+  }
+
+  .waiting-pos {
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+
+  /* Court Grid and Cards */
+  .courts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    width: 100%;
+  }
+
+  .court-card {
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(229, 231, 235, 0.6);
+    padding: 24px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    min-height: 250px;
+    transition: all 0.3s ease;
+  }
+
+  .court-card.focused {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(13, 161, 116, 0.15), var(--shadow-lg);
+  }
+
+  .court-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .court-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  /* Status Tags */
+  .court-status-tag {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .tag-playing {
+    background: var(--orange-light);
+    color: var(--orange-dark);
+  }
+
+  .tag-ready {
+    background: var(--green-light);
+    color: var(--green-dark);
+  }
+
+  .court-timer-badge {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 8px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    background: #f3f4f6;
+    color: var(--text-secondary);
+  }
+
+  /* Court Match Styles */
+  .court-match-container {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex: 1;
+  }
+
+  .team-card {
+    border-radius: var(--radius-md);
+    padding: 16px 12px;
+    text-align: center;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+    cursor: default;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100px;
+  }
+
+  .team-card-a {
+    background: var(--blue-light);
+  }
+
+  .team-card-b {
+    background: var(--pink-light);
+  }
+
+  /* Active team cards (winner selector) during play */
+  .court-card.playing .team-card {
+    cursor: pointer;
+  }
+
+  .court-card.playing .team-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .court-card.playing .team-card-a:hover {
+    border-color: var(--blue);
+  }
+
+  .court-card.playing .team-card-b:hover {
+    border-color: var(--pink);
+  }
+
+  .court-card.playing .team-card-a.winner-selected {
+    border-color: var(--blue);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+  }
+
+  .court-card.playing .team-card-b.winner-selected {
+    border-color: var(--pink);
+    box-shadow: 0 4px 12px rgba(219, 39, 119, 0.15);
+  }
+
+  .team-role-pill {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 8px;
+    display: inline-block;
+    margin: 0 auto 8px;
+  }
+
+  .team-role-a {
+    background: rgba(37, 99, 235, 0.1);
+    color: var(--blue);
+  }
+
+  .team-role-b {
+    background: rgba(219, 39, 119, 0.1);
+    color: var(--pink);
+  }
+
+  .team-players-text {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+    word-break: break-all;
+  }
+
+  .team-card-a .team-players-text {
+    color: #1e40af;
+  }
+
+  .team-card-b .team-players-text {
+    color: #9d174d;
+  }
+
+  .vs-badge {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-muted);
+    background: #f3f4f6;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #fff;
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* Empty Court Dotted Card */
+  .court-card-empty {
+    border: 2px dashed rgba(167, 243, 208, 0.8);
+    background: transparent;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--green);
+    position: relative;
+  }
+
+  .court-card-empty:hover {
+    background: var(--green-light);
+    border-color: var(--green);
+  }
+
+  .empty-plus-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--green-light);
+    color: var(--green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 12px;
+    transition: all 0.2s ease;
+    z-index: 2;
+  }
+
+  .court-card-empty:hover .empty-plus-btn {
+    background: var(--green);
+    color: #fff;
+    transform: scale(1.1);
+  }
+
+  .empty-court-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--green-dark);
+    margin-bottom: 4px;
+    z-index: 2;
+  }
+
+  .empty-court-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    z-index: 2;
+  }
+
+  .court-card-empty .watermark-court {
+    position: absolute;
+    inset: 0;
+    opacity: 0.03;
+    pointer-events: none;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+  }
+
+  /* Action links under buttons */
+  .court-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .btn-text-muted {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s;
+  }
+
+  .btn-text-muted:hover {
+    color: var(--red);
+    background: var(--red-light);
+  }
+
+  /* Tags in layout */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .tag-green { background: var(--green-light); color: var(--green-dark); }
+  .tag-amber { background: var(--orange-light); color: var(--orange-dark); }
+  .tag-gray { background: #f3f4f6; color: #4b5563; }
+  .tag-red { background: var(--red-light); color: var(--red); }
+  
+  /* Levels and checkin style */
+  .ldots { display: flex; gap: 3px; align-items: center; }
+  .ldot { width: 6px; height: 6px; border-radius: 50%; background: #e5e7eb; }
+  .ldot.on-new { background: #9ca3af; }
+  .ldot.on-mid { background: var(--orange); }
+  .ldot.on-pro { background: var(--green); }
+
+  /* Check-in Modal */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 110, 86, 0.4);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 16px;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .modal {
+    background: #fff;
+    border-radius: 24px;
+    width: 100%;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 50px -12px rgba(15, 110, 86, 0.25);
+    border: 1px solid rgba(167, 243, 208, 0.3);
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .modal-header {
+    padding: 24px 24px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .modal-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--green-dark);
+  }
+
+  .modal-sub {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  .modal-body {
+    padding: 20px 24px;
+  }
+
+  .modal-footer {
+    padding: 16px 24px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border-color);
+    background: #f9fafb;
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+  }
+
+  .checkin-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    border: 1.5px solid var(--border-color);
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .checkin-row:hover {
+    border-color: var(--green-mid);
+    background: var(--green-light);
+  }
+
+  .checkin-row.sel {
+    background: var(--green-light);
+    border-color: var(--green);
+  }
+
+  .check-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+  }
+
+  .check-circle.on {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+  }
+
+  /* Stats and Leaderboard styling */
+  .stats-header-bar {
+    margin-bottom: 24px;
+  }
+
+  .top-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .top-stat {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    text-align: center;
+  }
+
+  .top-stat-num {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--green);
+  }
+
+  .top-stat-lbl {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }
+
+  .stats-layout {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 24px;
+  }
+
+  .tbl {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .tbl th {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 12px;
+    border-bottom: 1.5px solid var(--border-color);
+    text-align: left;
+  }
+
+  .tbl td {
+    padding: 12px;
+    border-bottom: 1px solid #f3f4f6;
+    vertical-align: middle;
+    color: var(--text-primary);
+  }
+
+  .tbl tr:last-child td {
+    border-bottom: none;
+  }
+
+  .tbl tr:hover td {
+    background: #f9fafb;
+  }
+
+  .rank-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    background: #f3f4f6;
+    color: var(--text-secondary);
+  }
+
+  .rank-1 { background: var(--orange-light); color: var(--orange-dark); }
+  .rank-2 { background: #e5e7eb; color: #374151; }
+  .rank-3 { background: #fef3c7; color: #b45309; }
+
+  .mvp {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #fef3c7;
+    color: #b45309;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 12px;
+  }
+
+  .wr-bar {
+    width: 60px;
+    height: 6px;
+    background: #e5e7eb;
+    border-radius: 3px;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+
+  .wr-fill {
+    height: 100%;
+    background: var(--green);
+    border-radius: 3px;
+  }
+
+  /* History list */
+  .history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .history-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .history-item:last-child {
+    border-bottom: none;
+  }
+
+  .history-teams {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .h-team-a { color: var(--blue); font-weight: 600; }
+  .h-team-b { color: var(--pink); font-weight: 600; }
+
+  /* Responsive styling */
+  @media (max-width: 900px) {
+    .two-col {
+      flex-direction: column;
+    }
+    .two-col .left {
+      width: 100%;
+    }
+    .stats-layout {
+      grid-template-columns: 1fr;
+    }
+    .top-stats {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .courts-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .main {
+      padding: 20px 14px 130px;
+    }
+    .page-title {
+      font-size: 26px;
+    }
+    .page-header {
+      gap: 12px;
+    }
+    .header-left {
+      gap: 10px;
+    }
+    .card, .court-card {
+      padding: 16px;
+    }
+    .top-stat {
+      padding: 14px;
+    }
+    .top-stat-num {
+      font-size: 24px;
+    }
+    .modal-header, .modal-footer {
+      padding: 16px;
+    }
+    .modal-body {
+      padding: 14px 16px;
+    }
+    .court-select-btn {
+      width: 48px;
+      height: 48px;
+    }
+    .bottom-nav {
+      bottom: 12px;
+      padding: 6px 6px;
+      gap: 0;
+    }
+    .nav-item {
+      padding: 8px 18px;
+    }
+    .court-match-container {
+      grid-template-columns: 1fr auto 1fr;
+      gap: 6px;
+    }
+    .team-players-text {
+      font-size: 13px;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .top-stats {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Utility classes */
+  .flex-center { display: flex; align-items: center; }
+  .jcsb { justify-content: space-between; }
+  .f1 { flex: 1; }
+  .gap-8 { gap: 8px; }
+  .mb-8 { margin-bottom: 8px; }
+  .mb-12 { margin-bottom: 12px; }
+  .mb-16 { margin-bottom: 16px; }
+  .mb-20 { margin-bottom: 20px; }
+
+  /* Waiting Actions */
+  .waiting-actions {
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  .waiting-item:hover .waiting-actions {
+    opacity: 1;
+  }
+  .btn-action-sm {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+  .btn-action-sm:hover {
+    background: #f3f4f6;
+  }
+  .btn-action-sm.skip:hover {
+    color: var(--orange-dark);
+    background: var(--orange-light);
+  }
+  .btn-action-sm.exit:hover {
+    color: var(--red);
+    background: var(--red-light);
+  }
+</style>
+</head>
+<body>
+<div class="bg-blur-blob blob-1"></div>
+<div class="bg-blur-blob blob-2"></div>
+<div class="bg-blur-blob blob-3"></div>
+<div class="bg-decor"></div>
+<svg class="bg-shuttlecock" width="100" height="100" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M50 15 C45 25 35 45 35 70 C35 78 40 82 50 82 C60 82 65 78 65 70 C65 45 55 25 50 15 Z" />
+  <path d="M37 55 L63 55" />
+  <path d="M40 70 L60 70" />
+  <path d="M42 82 L42 90 C42 92 45 94 50 94 C55 94 58 92 58 90 L58 82" />
+  <path d="M50 15 L50 82" />
+  <path d="M42 25 L47 82" />
+  <path d="M58 25 L53 82" />
+</svg>
+
+<div class="app">
+  <main class="main" id="main-content"></main>
+
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="navigate('queue')" id="nav-queue">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <ellipse cx="14.5" cy="9.5" rx="4.5" ry="5.5" transform="rotate(45 14.5 9.5)" />
+        <path d="M12.5 7.5 L16.5 11.5" stroke-width="1" opacity="0.6" />
+        <path d="M11.5 8.5 L15.5 12.5" stroke-width="1" opacity="0.6" />
+        <path d="M13.5 6.5 L17.5 10.5" stroke-width="1" opacity="0.6" />
+        <path d="M11.5 10.5 L15.5 6.5" stroke-width="1" opacity="0.6" />
+        <path d="M12.5 11.5 L16.5 7.5" stroke-width="1" opacity="0.6" />
+        <path d="M11 13 L6 18" />
+        <path d="M6 18 L4 20" stroke-width="3" />
+      </svg>
+      <span>จัดคิว</span>
+    </button>
+    <button class="nav-item" onclick="navigate('players')" id="nav-players">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3" />
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+      </svg>
+      <span>ตั้งค่า</span>
+    </button>
+    <button class="nav-item" onclick="navigate('stats')" id="nav-stats">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="20" x2="18" y2="10" />
+        <line x1="12" y1="20" x2="12" y2="4" />
+        <line x1="6" y1="20" x2="6" y2="14" />
+      </svg>
+      <span>สถิติ</span>
+    </button>
+  </nav>
+</div>
+
+<!-- Templates rendered by JS -->
+<script>
+// ============================================================
+// STATE
+// ============================================================
+const avColors = [
+  ['#e1f5ee','#0f6e56'],['#e6f1fb','#185fa5'],
+  ['#fbeaf0','#993556'],['#faeeda','#854f0b'],
+  ['#f3e8ff','#6b21a8'],['#e0f2fe','#0369a1'],
+];
+function avColor(name){ const i=name.charCodeAt(0)%avColors.length; return avColors[i]; }
+
+const LEVEL_SCORE = {มือใหม่:1, กลาง:2, เก่ง:3};
+
+let state = {
+  page: 'queue',
+  players: [
+    {id:1,name:'คุนนี่',level:'กลาง',w:0,l:0,games:0},
+    {id:2,name:'พี่เดียร์',level:'เก่ง',w:0,l:0,games:0},
+    {id:3,name:'พี่ไผ่',level:'กลาง',w:0,l:0,games:0},
+    {id:4,name:'พึ่มด',level:'กลาง',w:0,l:0,games:0},
+    {id:5,name:'พี่รอม',level:'กลาง',w:0,l:0,games:0},
+    {id:6,name:'ฟิน',level:'กลาง',w:0,l:0,games:0},
+    {id:7,name:'เฟรม',level:'กลาง',w:0,l:0,games:0},
+    {id:8,name:'โอม',level:'กลาง',w:0,l:0,games:0},
+    {id:9,name:'แฟ้ม',level:'มือใหม่',w:0,l:0,games:0},
+  ],
+  checkedIn: [],
+  numCourts: 2,
+  courts: [{status:'empty'},{status:'empty'}],
+  history: [],
+  showCheckin: false,
+  editPlayerId: null,
+  playerForm: {name:'',level:'กลาง'},
+  playerFilter: 'ทั้งหมด',
+  checkinSearch: '',
+  checkinSel: new Set(),
+  courtWinner: [null,null,null,null],
+  selectedCourtIdx: 0,
+  pairHistory: new Set(), // keys of "id1-id2" for players who have already been teammates
+};
+
+// ============================================================
+// PERSISTENCE (localStorage)
+// ============================================================
+const STORAGE_KEY = 'qbad_state_v1';
+const PERSISTED_KEYS = ['players','checkedIn','numCourts','courts','history','courtWinner'];
+
+function saveState(){
+  try{
+    const toSave = {};
+    for(const k of PERSISTED_KEYS) toSave[k] = state[k];
+    toSave.pairHistory = [...state.pairHistory];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+  }catch(e){ /* storage unavailable (e.g. private mode) - ignore, app still works in-memory */ }
+}
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return;
+    const saved = JSON.parse(raw);
+    for(const k of PERSISTED_KEYS) if(saved[k]!==undefined) state[k]=saved[k];
+    if(Array.isArray(saved.pairHistory)) state.pairHistory = new Set(saved.pairHistory);
+  }catch(e){ /* corrupted/unavailable storage - fall back to default state */ }
+}
+
+// ============================================================
+// UTILS
+// ============================================================
+function avatar(name, cls=''){
+  const [bg,fg]=avColor(name);
+  return `<div class="avatar ${cls}" style="background:${bg};color:${fg}">${name.charAt(0)}</div>`;
+}
+
+function levelDots(level){
+  const n=LEVEL_SCORE[level]||1;
+  const cls=n===3?'on-pro':n===2?'on-mid':'on-new';
+  return `<div class="ldots">${[1,2,3].map(i=>`<div class="ldot${i<=n?' '+cls:''}"></div>`).join('')}</div>`;
+}
+
+function levelTag(level){
+  const colors={มือใหม่:'tag-gray',กลาง:'tag-amber',เก่ง:'tag-green'};
+  return `<span class="tag ${colors[level]||'tag-gray'}">${level}</span>`;
+}
+
+// Pairing history: two players who have already been teammates are avoided in future team-ups
+function pairKey(id1,id2){ return id1<id2?`${id1}-${id2}`:`${id2}-${id1}`; }
+function hasPaired(a,b){ return state.pairHistory.has(pairKey(a.id,b.id)); }
+function markPaired(teamA,teamB){
+  state.pairHistory.add(pairKey(teamA[0].id,teamA[1].id));
+  state.pairHistory.add(pairKey(teamB[0].id,teamB[1].id));
+}
+function unmarkPaired(teamA,teamB){
+  state.pairHistory.delete(pairKey(teamA[0].id,teamA[1].id));
+  state.pairHistory.delete(pairKey(teamB[0].id,teamB[1].id));
+}
+
+function combinations(arr,k){
+  const results=[];
+  (function helper(start,combo){
+    if(combo.length===k){ results.push(combo); return; }
+    for(let i=start;i<arr.length;i++) helper(i+1,[...combo,arr[i]]);
+  })(0,[]);
+  return results;
+}
+
+// Score a 4-player split: fewer repeat-teammate pairs first, then closer skill balance
+function scoreSplit(teamA,teamB){
+  const repeats=(hasPaired(teamA[0],teamA[1])?1:0)+(hasPaired(teamB[0],teamB[1])?1:0);
+  const diff=Math.abs(
+    (LEVEL_SCORE[teamA[0].level]||2)+(LEVEL_SCORE[teamA[1].level]||2) -
+    ((LEVEL_SCORE[teamB[0].level]||2)+(LEVEL_SCORE[teamB[1].level]||2))
+  );
+  return {repeats,diff};
+}
+
+function bestSplit(four){
+  const [a,b,c,d]=four;
+  const options=[[[a,b],[c,d]],[[a,c],[b,d]],[[a,d],[b,c]]];
+  let best=null;
+  for(const [teamA,teamB] of options){
+    const {repeats,diff}=scoreSplit(teamA,teamB);
+    if(!best||repeats<best.repeats||(repeats===best.repeats&&diff<best.diff)){
+      best={teamA,teamB,repeats,diff};
+    }
+  }
+  return best;
+}
+
+// Pick 4 players from the queue (keeping the longest-waiting player first) and the
+// team split among them that avoids repeat teammates, preferring players closest to
+// the front of the queue. Falls back to the least-repetitive split if none is repeat-free.
+function pickTeams(q){
+  const first=q[0];
+  const rest=q.slice(1);
+  for(const combo of combinations(rest,3)){
+    const split=bestSplit([first,...combo]);
+    if(split.repeats===0) return split;
+  }
+  return bestSplit(q.slice(0,4));
+}
+
+function getPlayer(id){ return state.players.find(p=>p.id===id); }
+function setCourtWinner(idx,w){ state.courtWinner[idx]=w; render(); }
+
+function inGameIds(){
+  return state.courts.flatMap(c=>c.status!=='empty'?[...(c.teamA||[]),...(c.teamB||[])].map(p=>p.id):[]);
+}
+function freeQueue(){
+  const ig=new Set(inGameIds());
+  return state.checkedIn.filter(p=>!ig.has(p.id));
+}
+
+// ============================================================
+// ACTIONS
+// ============================================================
+function navigate(page){
+  state.page=page;
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  document.getElementById('nav-'+page)?.classList.add('active');
+  render();
+}
+
+function openCheckin(){
+  state.checkinSel=new Set(state.checkedIn.map(p=>p.id));
+  state.checkinSearch='';
+  state.showCheckin=true;
+  render();
+}
+
+function toggleCheckin(id){
+  if(state.checkinSel.has(id)) state.checkinSel.delete(id);
+  else state.checkinSel.add(id);
+  render();
+}
+
+function confirmCheckin(){
+  state.checkedIn=state.players.filter(p=>state.checkinSel.has(p.id));
+  state.courts=Array(state.numCourts).fill(null).map(()=>({status:'empty'}));
+  state.courtWinner=Array(4).fill(null);
+  state.pairHistory=new Set();
+  state.showCheckin=false;
+  render();
+}
+
+function setNumCourts(n){
+  state.numCourts=n;
+  state.courts=Array(n).fill(null).map(()=>({status:'empty'}));
+  state.courtWinner=Array(4).fill(null);
+  render();
+}
+
+function assignCourt(idx){
+  const q=freeQueue();
+  if(q.length<4) return;
+  const {teamA,teamB}=pickTeams(q);
+  const courts=[...state.courts];
+  courts[idx]={status:'ready',teamA,teamB};
+  state.courts=courts;
+  markPaired(teamA,teamB);
+  render();
+}
+
+function startGame(idx){
+  const courts=[...state.courts];
+  courts[idx]={...courts[idx],status:'playing',startTime:Date.now()};
+  state.courts=courts;
+  render();
+}
+
+function formatDuration(ms){
+  const totalSec=Math.max(0,Math.floor(ms/1000));
+  const m=String(Math.floor(totalSec/60)).padStart(2,'0');
+  const s=String(totalSec%60).padStart(2,'0');
+  return `${m}:${s}`;
+}
+
+// Updates timer badges in-place every second without a full re-render
+function tickTimers(){
+  state.courts.forEach((court,idx)=>{
+    if(court.status!=='playing'||!court.startTime) return;
+    const el=document.getElementById(`timer-${idx}`);
+    if(el) el.textContent=formatDuration(Date.now()-court.startTime);
+  });
+}
+setInterval(tickTimers,1000);
+
+function skipCourt(idx){
+  const court=state.courts[idx];
+  if(court.teamA&&court.teamB) unmarkPaired(court.teamA,court.teamB);
+  const courts=[...state.courts];
+  courts[idx]={status:'empty'};
+  state.courts=courts;
+  state.courtWinner[idx]=null;
+  render();
+}
+
+function skipPlayerTurn(id){
+  const player = state.checkedIn.find(p => p.id === id);
+  if(!player) return;
+  const otherPlayers = state.checkedIn.filter(p => p.id !== id);
+  state.checkedIn = [...otherPlayers, player];
+  render();
+}
+
+function checkoutPlayer(id){
+  state.checkedIn = state.checkedIn.filter(p => p.id !== id);
+  render();
+}
+
+function recordResult(idx){
+  const w=state.courtWinner[idx];
+  if(!w) return;
+  const court=state.courts[idx];
+  const winners=w==='A'?court.teamA:court.teamB;
+  const losers=w==='A'?court.teamB:court.teamA;
+  const all4=[...court.teamA,...court.teamB];
+  // update players
+  state.players=state.players.map(p=>{
+    if(winners.find(x=>x.id===p.id)) return{...p,w:p.w+1,games:p.games+1};
+    if(losers.find(x=>x.id===p.id)) return{...p,l:p.l+1,games:p.games+1};
+    return p;
+  });
+  
+  // Update games count and move players who just played to the back of the queue (FIFO)
+  const playedPlayers = state.checkedIn.filter(p => all4.find(x => x.id === p.id)).map(p => ({...p, games: p.games + 1}));
+  const otherPlayers = state.checkedIn.filter(p => !all4.find(x => x.id === p.id));
+  state.checkedIn = [...otherPlayers, ...playedPlayers];
+
+  // history
+  state.history.unshift({
+    courtNum:idx+1,
+    teamA:court.teamA.map(p=>p.name),
+    teamB:court.teamB.map(p=>p.name),
+    winner:w,
+    time:new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})
+  });
+  const courts=[...state.courts];
+  courts[idx]={status:'empty'};
+  state.courts=courts;
+  state.courtWinner[idx]=null;
+  render();
+}
+
+function addEditPlayer(){
+  const {name,level}=state.playerForm;
+  if(!name.trim()) return;
+  if(state.editPlayerId){
+    state.players=state.players.map(p=>p.id===state.editPlayerId?{...p,name,level}:p);
+    state.editPlayerId=null;
+  } else {
+    state.players=[...state.players,{id:Date.now(),name,level,w:0,l:0,games:0}];
+  }
+  state.playerForm={name:'',level:'กลาง'};
+  render();
+}
+
+function editPlayer(id){
+  const p=state.players.find(x=>x.id===id);
+  state.editPlayerId=id;
+  state.playerForm={name:p.name,level:p.level};
+  render();
+}
+
+function deletePlayer(id){
+  state.players=state.players.filter(p=>p.id!==id);
+  state.checkedIn=state.checkedIn.filter(p=>p.id!==id);
+  render();
+}
+
+function cancelEdit(){
+  state.editPlayerId=null;
+  state.playerForm={name:'',level:'กลาง'};
+  render();
+}
+
+// ============================================================
+// RENDER PAGES
+// ============================================================
+
+function renderPlayersPage(){
+  const {players,playerForm,editPlayerId,playerFilter}=state;
+  const filters=['ทั้งหมด','มือใหม่','กลาง','เก่ง'];
+  const shown=playerFilter==='ทั้งหมด'?players:players.filter(p=>p.level===playerFilter);
+  
+  // 1. Level options
+  const levelOpts = ['มือใหม่','กลาง','เก่ง'].map(l => {
+    const isSelected = playerForm.level === l ? ' selected' : '';
+    return `<option${isSelected}>${l}</option>`;
+  }).join('');
+  
+  // 2. Court settings buttons
+  const courtBtns = [1, 2, 3, 4].map(n => {
+    const isActive = state.numCourts === n ? ' active' : '';
+    return `
+      <button class="court-select-btn${isActive}" onclick="setNumCourts(${n})" style="width: 50px; height: 50px; font-size: 16px; border-radius: var(--radius-md);">
+        ${n}
+      </button>
+    `;
+  }).join('');
+  
+  // 3. Filter buttons
+  const filterBtns = filters.map(f => {
+    const isPrimary = playerFilter === f ? 'btn-primary' : '';
+    return `<button class="btn btn-sm ${isPrimary}" onclick="state.playerFilter='${f}';render()" style="border-radius: 20px; padding: 6px 16px;">${f}</button>`;
+  }).join('');
+  
+  // 4. Player list rows
+  let playerRows = `<div style="text-align:center; padding: 40px; color: var(--text-muted);">ยังไม่มีผู้เล่นในระดับนี้</div>`;
+  if (shown.length > 0) {
+    playerRows = shown.map(p => {
+      const pAvatar = avatar(p.name);
+      const dots = levelDots(p.level);
+      const nameEsc = escHtml(p.name);
+      return `
+        <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f3f4f6">
+          ${pAvatar}
+          <div class="f1">
+            <div style="font-weight: 600; font-size: 15px; color: var(--text-primary);">${nameEsc}</div>
+            <div class="flex-center gap-8" style="margin-top:4px">
+              ${dots}
+              <span class="fs-11" style="color: var(--text-muted);">${p.level} · เล่นแล้ว ${p.games} เกม</span>
+            </div>
+          </div>
+          <button class="btn btn-sm btn-icon" title="แก้ไข" onclick="editPlayer(${p.id})">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4z" />
+            </svg>
+          </button>
+          <button class="btn btn-sm btn-icon" title="ลบ" style="color: var(--red); border-color: rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.02);" onclick="deletePlayer(${p.id})">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+              <line x1="10" y1="11" x2="10" y2="17" />
+              <line x1="14" y1="11" x2="14" y2="17" />
+            </svg>
+          </button>
+        </div>
+      `;
+    }).join('');
+  }
+  
+  const formTitle = editPlayerId ? '✏️ แก้ไขผู้เล่น' : '➕ เพิ่มผู้เล่น';
+  const saveBtnText = editPlayerId ? 'บันทึก' : 'บันทึกผู้เล่น';
+  const cancelBtn = editPlayerId ? `<button class="btn" onclick="cancelEdit()">ยกเลิก</button>` : '';
+  const nameValue = escHtml(playerForm.name);
+  const playerLength = players.length;
+
+  return `
+<div class="page-header">
+  <div class="header-left">
+    <div class="page-title">การตั้งค่า</div>
+  </div>
+</div>
+<div class="two-col">
+  <div class="left">
+    <!-- Player Form -->
+    <div class="card">
+      <div class="court-select-title" style="font-weight: 700; margin-bottom: 16px;">
+        ${formTitle}
+      </div>
+      <div class="mb-12">
+        <label class="form-label">ชื่อผู้เล่น</label>
+        <input class="form-input" type="text" value="${nameValue}" placeholder="พิมพ์ชื่อ..." oninput="state.playerForm.name=this.value" onkeydown="if(event.key==='Enter')addEditPlayer()">
+      </div>
+      <div class="mb-16">
+        <label class="form-label">ระดับฝีมือ</label>
+        <select class="form-input" onchange="state.playerForm.level=this.value">
+          ${levelOpts}
+        </select>
+      </div>
+      <div class="flex gap-8">
+        <button class="btn btn-primary f1" onclick="addEditPlayer()">${saveBtnText}</button>
+        ${cancelBtn}
+      </div>
+    </div>
+    
+    <!-- Court Settings -->
+    <div class="card" style="margin-top: 20px;">
+      <div class="court-select-title" style="font-weight: 700; margin-bottom: 12px;">จำนวนสนาม</div>
+      <div class="court-select-grid" style="margin-bottom: 0;">
+        ${courtBtns}
+      </div>
+    </div>
+  </div>
+  <div class="right">
+    <!-- Player List -->
+    <div class="card">
+      <div class="flex-center jcsb mb-16">
+        <div class="court-select-title" style="font-weight: 700; margin-bottom: 0;">รายชื่อผู้เล่น</div>
+        <span class="tag tag-gray">${playerLength} คน</span>
+      </div>
+      <div class="flex gap-8 mb-16" style="flex-wrap: wrap;">
+        ${filterBtns}
+      </div>
+      ${playerRows}
+    </div>
+  </div>
+</div>`;
+}
+
+function renderCourtCard(court, idx){
+  const w = state.courtWinner[idx];
+  const isSelected = state.selectedCourtIdx === idx;
+  
+  if (court.status === 'empty') {
+    const q = freeQueue();
+    const canAssign = q.length >= 4;
+    const clickAttr = canAssign ? `onclick="assignCourt(${idx})"` : 'title="ต้องมีผู้เล่นรอในคิวอย่างน้อย 4 คน"';
+    
+    return `
+      <div class="court-card court-card-empty${canAssign ? '' : ' disabled'}${isSelected ? ' focused' : ''}" ${clickAttr}>
+        <div class="watermark-court">
+          <svg width="150" height="150" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-dasharray="2 2" opacity="0.3">
+            <rect x="10" y="10" width="80" height="80" stroke-width="1" />
+            <line x1="10" y1="50" x2="90" y2="50" stroke-width="1" />
+            <line x1="10" y1="30" x2="90" y2="30" stroke-width="0.5" />
+            <line x1="10" y1="70" x2="90" y2="70" stroke-width="0.5" />
+            <line x1="50" y1="10" x2="50" y2="90" stroke-width="1" />
+            <line x1="20" y1="10" x2="20" y2="90" stroke-width="0.5" />
+            <line x1="80" y1="10" x2="80" y2="90" stroke-width="0.5" />
+          </svg>
+        </div>
+        <div class="empty-plus-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+        </div>
+        <div class="empty-court-title">จัดคิวสนามนี้</div>
+        <div class="empty-court-sub">สนาม ${idx+1}</div>
+      </div>
+    `;
+  }
+  
+  const isPlaying = court.status === 'playing';
+  const timerBadge = (isPlaying && court.startTime) ?
+    `<span class="court-timer-badge" id="timer-${idx}">${formatDuration(Date.now()-court.startTime)}</span>` : '';
+  const statusTag = isPlaying ?
+    `<span class="court-status-tag tag-playing">กำลังเล่น</span>${timerBadge}` :
+    '<span class="court-status-tag tag-ready">พร้อมเริ่ม</span>';
+
+  const teamAPlayers = court.teamA.map(p => escHtml(p.name)).join('•');
+  const teamBPlayers = court.teamB.map(p => escHtml(p.name)).join('•');
+  
+  // Click attributes for teams
+  const teamAClick = isPlaying ? `onclick="setCourtWinner(${idx},'A'); event.stopPropagation();"` : '';
+  const teamBClick = isPlaying ? `onclick="setCourtWinner(${idx},'B'); event.stopPropagation();"` : '';
+  
+  // Role headers for teams
+  const teamAHeader = (isPlaying && w === 'A') ? 
+    '<div class="team-role-pill team-role-a fw-7" style="background:#2563eb; color:#fff;">ทีม A ชนะ</div>' : 
+    '<div class="team-role-pill team-role-a">ทีม A</div>';
+    
+  const teamBHeader = (isPlaying && w === 'B') ? 
+    '<div class="team-role-pill team-role-b fw-7" style="background:#db2777; color:#fff;">ทีม B ชนะ</div>' : 
+    '<div class="team-role-pill team-role-b">ทีม B</div>';
+    
+  // Bottom action buttons
+  let actionButtons = '';
+  if (isPlaying) {
+    actionButtons = `
+      <div class="flex-center gap-8 mt-auto" style="margin-top: auto;">
+        <button class="btn btn-warn f1" ${!w ? 'disabled' : ''} onclick="recordResult(${idx}); event.stopPropagation();">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+            <path d="M9 14l2 2 4-4" />
+          </svg>
+          <span>บันทึกผล</span>
+        </button>
+        <button class="btn-text-muted" onclick="skipCourt(${idx}); event.stopPropagation();">ข้ามคิว</button>
+      </div>
+    `;
+  } else {
+    actionButtons = `
+      <div class="flex-center gap-8 mt-auto" style="margin-top: auto;">
+        <button class="btn btn-primary f1" onclick="startGame(${idx}); event.stopPropagation();">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3" />
+          </svg>
+          <span>เริ่มเกม</span>
+        </button>
+        <button class="btn-text-muted" onclick="skipCourt(${idx}); event.stopPropagation();">ข้ามคิว</button>
+      </div>
+    `;
+  }
+  
+  return `
+    <div class="court-card ${isPlaying ? 'playing' : ''} ${isSelected ? 'focused' : ''}" onclick="if(event.target.closest('.court-card') === this) { state.selectedCourtIdx=${idx}; render(); }">
+      <div class="court-card-header">
+        <span class="court-title">สนาม ${idx+1}</span>
+        ${statusTag}
+      </div>
+      
+      <div class="court-match-container">
+        <!-- Team A Card -->
+        <div class="team-card team-card-a ${w === 'A' ? 'winner-selected' : ''}" ${teamAClick}>
+          ${teamAHeader}
+          <div class="team-players-text">${teamAPlayers}</div>
+        </div>
+        
+        <div class="vs-badge">VS</div>
+        
+        <!-- Team B Card -->
+        <div class="team-card team-card-b ${w === 'B' ? 'winner-selected' : ''}" ${teamBClick}>
+          ${teamBHeader}
+          <div class="team-players-text">${teamBPlayers}</div>
+        </div>
+      </div>
+      
+      ${actionButtons}
+    </div>
+  `;
+}
+
+function renderQueuePage(){
+  const {numCourts,courts,checkedIn}=state;
+  const q=freeQueue();
+  const igIds=new Set(inGameIds());
+  
+  return `
+<div class="page-header">
+  <div class="header-left">
+    <div class="page-title">จัดคิว</div>
+    <div class="header-badges">
+      <span class="h-badge h-badge-green">พร้อมเล่น ${q.length}</span>
+      <span class="h-badge h-badge-orange">กำลังเล่น ${igIds.size}</span>
+    </div>
+  </div>
+  <button class="btn btn-primary" onclick="openCheckin()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+      <line x1="16" y1="2" x2="16" y2="6" />
+      <line x1="8" y1="2" x2="8" y2="6" />
+      <line x1="3" y1="10" x2="21" y2="10" />
+      <line x1="12" y1="14" x2="12" y2="18" />
+      <line x1="10" y1="16" x2="14" y2="16" />
+    </svg>
+    <span>+ Check-in วันนี้</span>
+  </button>
+</div>
+
+<div class="two-col">
+  <div class="left">
+    <div class="card waiting-card">
+      <div class="court-select-title">เลือกสนาม</div>
+      <div class="court-select-grid">
+        ${Array(numCourts).fill(0).map((_, i) => `
+          <button class="court-select-btn${state.selectedCourtIdx === i ? ' active' : ''}" onclick="state.selectedCourtIdx = ${i}; render();">
+            ${i + 1}
+            ${state.selectedCourtIdx === i ? `<span class="check-badge"><i class="ti ti-check"></i></span>` : ''}
+          </button>
+        `).join('')}
+      </div>
+
+      <div class="waiting-list-title">รายชื่อรอ (${q.length})</div>
+      <div class="waiting-list">
+        ${q.length === 0 ? `<div style="text-align:center; padding: 24px 0; color: var(--text-muted);">ไม่มีผู้เล่นรอคิว</div>` : 
+        q.map((p, idx) => `
+          <div class="waiting-item">
+            ${avatar(p.name)}
+            <div class="waiting-info">
+              <div class="waiting-name">${escHtml(p.name)}</div>
+              <div class="waiting-sub">${p.level}</div>
+            </div>
+            <div class="waiting-actions-container" style="display:flex; align-items:center; gap:8px;">
+              <div class="waiting-actions">
+                <button class="btn-action-sm skip" onclick="skipPlayerTurn(${p.id}); event.stopPropagation();" title="ข้ามตานี้ (ไปท้ายคิว)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="5 4 15 12 5 20 5 4" />
+                    <line x1="19" y1="5" x2="19" y2="19" />
+                  </svg>
+                </button>
+                <button class="btn-action-sm exit" onclick="checkoutPlayer(${p.id}); event.stopPropagation();" title="กลับบ้าน (ลบคิว)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                  </svg>
+                </button>
+              </div>
+              <div class="waiting-pos">#${idx + 1}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  </div>
+  <div class="right">
+    <div class="courts-grid">
+      ${Array(numCourts).fill(0).map((_, i) => renderCourtCard(courts[i] || {status:'empty'}, i)).join('')}
+    </div>
+  </div>
+</div>
+${state.showCheckin ? renderCheckinModal() : ''}`;
+}
+
+function renderCheckinModal(){
+  const {players,checkinSearch,checkinSel}=state;
+  const shown=players.filter(p=>p.name.includes(checkinSearch));
+  return `
+<div class="modal-backdrop" onclick="if(event.target===this){state.showCheckin=false;render()}">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Check-in วันนี้</div>
+        <div class="modal-sub">เลือกผู้เล่นที่มาตีรอบนี้ก่อนเริ่มจัดคิว</div>
+      </div>
+      <button class="btn btn-icon" onclick="state.showCheckin=false;render()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <input class="form-input mb-8" type="text" placeholder="ค้นหาชื่อผู้เล่น..." value="${escHtml(checkinSearch)}" oninput="state.checkinSearch=this.value;render()" style="margin-bottom:8px">
+      <div class="flex gap-8 mb-12" style="margin-bottom:10px">
+        <button class="btn btn-sm" style="color:var(--green-dark);border-color:var(--green-mid)" onclick="state.checkinSel=new Set(state.players.map(p=>p.id));render()">เลือกทั้งหมด</button>
+        <button class="btn btn-sm" onclick="state.checkinSel=new Set();render()">ล้างทั้งหมด</button>
+      </div>
+      <div style="max-height:320px;overflow-y:auto">
+        ${shown.map(p=>`
+          <div class="checkin-row${checkinSel.has(p.id)?' sel':''}" onclick="toggleCheckin(${p.id})">
+            <div class="check-circle${checkinSel.has(p.id)?' on':''}">${checkinSel.has(p.id)?'<i class="ti ti-check" style="font-size:11px;color:#fff"></i>':''}</div>
+            ${avatar(p.name,'av-sm')}
+            <div class="f1">
+              <div class="fs-12 fw-5">${escHtml(p.name)}</div>
+              <div class="flex-center gap-8" style="margin-top:2px">${levelDots(p.level)}<span class="fs-11 c-muted">${p.level}</span></div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>
+    <div class="modal-footer">
+      <span class="fs-11 c-muted">เลือกแล้ว ${checkinSel.size} คน · ต้องมีอย่างน้อย 4 คน</span>
+      <button class="btn btn-primary" ${checkinSel.size<4?'disabled':''} onclick="confirmCheckin()">ยืนยัน Check-in</button>
+    </div>
+  </div>
+</div>`;
+}
+
+function renderStatsPage(){
+  const {players,history,checkedIn}=state;
+  const totalGames=history.length;
+  const hasGames=players.some(p=>p.games>0);
+  const ranked=[...players].sort((a,b)=>{
+    if(b.w!==a.w) return b.w-a.w;
+    const wa=a.games?a.w/a.games:0, wb=b.games?b.w/b.games:0;
+    return wb-wa;
+  });
+  const mvpId=hasGames?ranked.find(p=>p.games>0)?.id:null;
+  return `
+<div class="page-header">
+  <div class="header-left">
+    <div class="page-title">สถิติ</div>
+  </div>
+</div>
+<div class="top-stats">
+  <div class="top-stat"><div class="top-stat-num">${totalGames}</div><div class="top-stat-lbl">เกมในรอบนี้</div></div>
+  <div class="top-stat"><div class="top-stat-num">${checkedIn.length}</div><div class="top-stat-lbl">ผู้เล่นในรอบนี้</div></div>
+  <div class="top-stat"><div class="top-stat-num">${players.filter(p=>p.games===0).length}</div><div class="top-stat-lbl">ยังไม่ได้เล่น</div></div>
+  <div class="top-stat"><div class="top-stat-num">${players.length}</div><div class="top-stat-lbl">ผู้เล่นทั้งหมด</div></div>
+</div>
+<div class="stats-layout">
+  <!-- Leaderboard -->
+  <div class="card">
+    <div class="court-select-title" style="font-weight: 700; margin-bottom: 16px;">อันดับรอบปัจจุบัน</div>
+    ${!hasGames?`<div style="text-align:center; padding: 40px; color: var(--text-muted);">ยังไม่มีสถิติในรอบนี้</div>`:
+    `<div style="overflow-x:auto;">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th style="width: 50px;">#</th>
+            <th>ผู้เล่น</th>
+            <th style="width: 80px;">ระดับ</th>
+            <th style="text-align:center; width: 50px;">W</th>
+            <th style="text-align:center; width: 50px;">L</th>
+            <th style="text-align:center; width: 50px;">เกม</th>
+            <th style="width: 140px;">Winrate</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${ranked.map((p,i)=>{
+            const wr=p.games?Math.round(p.w/p.games*100):0;
+            const isMvp=p.id===mvpId&&p.games>0;
+            const rCls=i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'';
+            return `<tr>
+              <td><div class="rank-num ${rCls}">${i+1}</div></td>
+              <td>
+                <div class="flex-center gap-8">
+                  ${avatar(p.name,'av-sm')}
+                  <span style="font-weight: 600; color: var(--text-primary);">${escHtml(p.name)}</span>
+                  ${isMvp?'<span class="mvp">🏆 MVP</span>':''}
+                </div>
+              </td>
+              <td>${levelTag(p.level)}</td>
+              <td style="text-align:center; font-weight:700; color:var(--green-dark)">${p.w}</td>
+              <td style="text-align:center; font-weight:700; color:var(--red)">${p.l}</td>
+              <td style="text-align:center; color:var(--text-secondary); font-weight:500;">${p.games}</td>
+              <td>
+                ${p.games>0?`<div class="flex-center gap-8"><div class="wr-bar"><div class="wr-fill" style="width:${wr}%"></div></div><span style="font-weight:600; font-size:12px;">${wr}%</span></div>`:
+                '<span style="color: var(--text-muted); font-size: 12px;">-</span>'}
+              </td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>`}
+  </div>
+  
+  <!-- History -->
+  <div class="card">
+    <div class="court-select-title" style="font-weight: 700; margin-bottom: 16px;">ประวัติการแข่งขัน</div>
+    ${history.length===0?`<div style="text-align:center; padding: 40px; color: var(--text-muted);">ยังไม่มีประวัติการแข่งขัน</div>`:
+    `<div class="history-list">
+      ${history.map(h=>`
+        <div class="history-item">
+          <span class="tag tag-gray" style="flex-shrink:0;">สนาม ${h.courtNum}</span>
+          <div class="history-teams">
+            <span class="h-team-a">${escHtml(h.teamA.join(' & '))}</span>
+            <span style="color: var(--text-muted); font-size:11px;">vs</span>
+            <span class="h-team-b">${escHtml(h.teamB.join(' & '))}</span>
+          </div>
+          <span class="tag ${h.winner==='A'?'tag-green':'tag-amber'}" style="flex-shrink:0;">
+            ${h.winner==='A'?'ทีม A ชนะ':'ทีม B ชนะ'}
+          </span>
+          <span style="font-size:11px; color:var(--text-muted); width:40px; text-align:right; flex-shrink:0;">${h.time}</span>
+        </div>`).join('')}
+    </div>`}
+  </div>
+</div>`;
+}
+
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function render(){
+  const el=document.getElementById('main-content');
+  if(!el) return;
+  if(state.page==='players') el.innerHTML=renderPlayersPage();
+  else if(state.page==='queue') el.innerHTML=renderQueuePage();
+  else if(state.page==='stats') el.innerHTML=renderStatsPage();
+  saveState();
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{ loadState(); render(); });
+</script>
+</body>
+</html>
